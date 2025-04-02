@@ -1,0 +1,1025 @@
+---
+title: "Inequality as a Predictor for Social Instability"
+author: "JC De Orellana Sanchez"
+date: "`r Sys.Date()`"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=FALSE, include=FALSE}
+library(tidyverse)
+library(modelsummary)   
+library(estimatr)       
+library(plm)            
+library(mfx)            
+library(infer)
+library(corrplot)
+library(ggrepel)
+library(ggdag)
+library(patchwork)
+library(gt)
+
+source("tools/tools.r")
+source("data/instability_data.r")
+```
+
+## Introduction
+
+History, sociology, and other social sciences have cautiously avoided or
+emphatically rejected predicting or forecasting social unrest. Their
+goal, these disciplines maintain, is to explain phenomena through
+empirical observation, testing, and theorizing. Data science, political
+economy, and public policy, on the other hand, seek to define variables
+an methods to measure and predict the costs and effects of policies as
+well as the domestic and external factors that influence and trigger
+dynamics societies and the economy. This paper is the first step in a
+long term project that seeks to bridge both perspectives to understand
+what economic, political, social, environmental, and international
+factors may lead to social instability (discontent, unrest, and
+violence). Specifically, the paper asks whether inequality--economic and
+social--are good predictors of social instability. In other words, what
+originates social instability? Are unequal societies more prone to fall
+into instability?
+
+-   **answer**
+
+Relying on data collected from large time-series datasets containing
+economic, political, and social social data collected for countries
+around the globe, the results of this study are still inconclusive. It
+posits that predicting social unrest and instability seems possible to
+an extent, but greater attention needs to be paid to the variables and
+metrics used, and locally specific circumstances. The answer to the
+first, broader question is partial. Rather than determining the factors
+that if properly accounted might lead to social unrest and instability,
+at this stage the study can only show which ones unperformed and do not
+appear as good indicators. The second question also returned mixed
+results. Some inequality variables are better at predicting social
+instability, at least in the terms defined in this paper: based on
+political terror and the presence of riots and protests after elections.
+The overall answer answer to both questions seems to be that it is
+necessary to revisit the variable and metrics with which political
+instability is defined. It appears crucial to find metrics that account
+for social instability that are not as extreme as terrorism or actual
+violence. Perhaps insecurity measured in terms of robbery, theft,
+assault, and organized crime, as well as the frequency of protests,
+strikes, and maybe engagement with support to "alternative" media and
+political candidates.
+
+For centuries, scientists have worked to develop methods, tools, and
+metrics to forecast the weather and earthquakes. Studying the
+atmosphere, weather, and climate, meteorologists use scientific
+principles to understand and predict weather patterns and atmospheric
+phenomena. As of today, they have refined their methods to the point of
+being able to do short-term forecasts (up to 48 hours) with a high
+degree of precision. However, the accuracy diminishes depending on how
+far in the future they try to predict the weather. 3 - 7 days forecasts
+are still accurate but their precision in terms of details like
+temperatures or precipitation diminish. 8 - 14 days predictions are even
+less accurate as they provide an idea of what could happen based on
+historical data and the observation of occurring trends. Extended-range
+forecasts of more than two weeks are mostly experimental and focus on
+overall climate patterns and anomalies rather than on predicting
+specific weather conditions.
+
+To reach the present degrees of accuracy for the prediction and
+forecasting of weather conditions, meteorology relies on data produced
+by systematic observation, measurement, and recording of climate
+phenomena. Recording weather conditions was only possible thanks to the
+invention and use of tools such as the thermometer, barometer, and
+hygrometer in the 17th century, as they allowed the quantification and
+scaling of temperature, wind speed, and humidity. These instruments were
+later followed by radiosondes, weather balloons, and radars. The
+incorporation of models based on fluids dynamics and thermodynamics in
+the 20th century turned the possibility to understand and predict the
+weather into reality. The incorporation of satellite imagery and
+development of numerical weather prediction thanks to powerful
+computers, has allowed to factor in the extant data and methods to
+develop simulation models that have brought meteorology to its current
+state of affairs.
+
+Similarly, seismology is today capable of predicting earthquakes within
+a few seconds so as to alert the population via instant message systems
+so they can act quickly and find safe spaces.
+
+The forecasting capabilities of meteorology and seismology rely on
+measurement tools, mathematical and physics models, the attention to
+historical trends, and the incorporation of computational techniques.
+The main point of this paper is that the prediction of social unrest and
+instability can be achieved by uncovering the right social political,
+and economic dynamics to focus in, understanding the impact of the
+environment in them, and factoring in specific cultural markers, as well
+as historical and international trends. To do so, social and data
+scientists must ascertain what are the correct phenomena to measure
+(like temperature and pressure with the weather), create the best
+"sensors" to capture their variation, and develop adequate mathematical
+and computational models to explain and forecast them.
+
+Like with seismology, perhaps forecasting the precise moment when a
+riot, rebellion, or revolution might arise will only be achievable for
+the short term, based on the constant updating of new data and
+intelligence. Yet, like with meteorology, the continuous trace of
+certain dynamics, patterns, phenomena, and history may help predict for
+the mid and long term that, if not corrections are incorporated, the
+rise of discontent and the likelihood for it to derive into instability.
+
+## Theories and causality
+
+General Hypothesis: Social Instability is the result of inequality, both
+economic and social:
+
+**SI \<- Ie + Is**
+
+**Legend**
+
+SI: Social Instability
+
+Is: Social Inequality
+
+Ie: Economic Inequality
+
+## Theories and causality. Economic Inequality on Social Instability
+
+Theory 1:
+
+Social Instability is the result of economic inequality, but has
+corruption, basic services, and unemployment as controls.
+
+Theory 2.
+
+Social Instability is the result of economic inequality, which also
+influences/produces corruption, basic services, and unemploymen.
+
+**Legend**
+
+SI: Social Instability
+
+Ie: Economic Inequality
+
+C: Corruption
+
+U: Unemployment & Precarious/Informal Employment
+
+BS: Basic Services
+
+## Theories and causality. Economic Inequality on Social Instability
+
+**Theory 3:**
+
+Social Instability is the result of social inequality, but has
+corruption, basic services (lack thereof), and unemployment as controls.
+
+Social Inequality is the product of basic services (lack thereof),
+corruption, economic inequality, education, and unemployment.
+
+Economic inequality is represented as in Theory 1
+
+Trust (lack thereof) is the product of Social Inequality
+
+**Theory 4.**
+
+Social Instability is the result of social inequality, but has
+corruption, basic services (lack thereof), trust, and unemployment as
+controls.
+
+Corruption results from trust (lack thereof)
+
+**Legend** SI: Social Instability
+
+Is: Social Inequality
+
+Ie: Economic Inequality
+
+C: Corruption
+
+U: Unemployment & Precarious/Informal Employment
+
+BS: Basic Services
+
+T: Trust
+
+E: Education
+
+### Literature Review
+
+The paper follows the work of Peter Turchin, Doug McAdam, Sidney Tarrow,
+Charles Tilly. Turchin is the proponent of an analytic and predictive
+science of history he calls Cliodynamics. According to him, there may be
+general regularities characterizing the dynamics of human societies, and
+it is because social systems are extremely complex that we need
+mathematical models to grasp and formulate them properly (Turchin, 2011,
+173). Like scientific prediction, historical prediction can be used to
+test theories. "In a scientific prediction exercise we want to use the
+degree of match between observables to infer the validity of a theory,"
+and since "no theory makes perfect predictions, we ... want to compare
+the match between predictions and data for two (or more) theories." For
+history, Turchin argues, one can use two or more theories and see how
+well they predict phenomena in the past, thus making retrospective
+predictions or "retrodictions" (Turchin, 2011, 169-170).
+
+The paper also follows Turchin's work on political instability and Doug
+McAdam', Sidney Tarrow', Charles Tilly's publications on contentious
+politics. For Turchin, under the structural-demographic theory, human
+societies are systems with three main compartments: the general
+population, the elite, and the state (Turchin, 2013) . These interact
+with each other and with socio-political instability built in via a web
+of nonlinear feedbacks (Figure 1). For him social pressure can be
+quatified for instability using three variables, the political stress
+indicator, the dynamic of real wages, and elite dynamics. Complementing
+Turchin's model/theory, the paper also builds upon Doug McAdam', Sidney
+Tarrow', Charles Tilly's methods for measuring mechanisms of contention
+(McAdam, Tarrow & Tilly, 2008). According to the authors, the best way
+to explain and predict contentious politics is by focusing on causality.
+They argue that the best way to find the cause(s) of contention is by
+analyzing mechanisms and processes.
+
+## Data
+
+### Datasets
+
+-   Teorell, Jan, Aksel Sundström, Sören Holmberg, Bo Rothstein, Natalia
+    Alvarado Pachon, Cem Mert Dalli, Rafael Lopez Valverde & Paula
+    Nilsson. 2024. The Quality of Government Standard Dataset, version
+    Jan24. University of Gothenburg: The Quality of Government
+    Institute, <https://www.gu.se/en/quality-government>
+    <doi:10.18157/qogstdjan24Quality> of Government dataset. Time series
+    released on January 2024
+
+-   The Political Terror Scale dataset.
+    <https://www.politicalterrorscale.org/> Amnesty International and
+    State Department sets
+
+-   United Nations Development Program
+    (<https://data.undp.org/access-all-data>). Unemployment and Informal
+    Employment data.
+
+-   WorldBank. Informal Economy Database. Elgin, C., M. A. Kose, F.
+    Ohnsorge, and S. Yu. 2021. “Understanding Informality.” CERP
+    Discussion Paper 16497, Centre for Economic Policy Research, London.
+    <https://www.worldbank.org/en/research/brief/informal-economy-database>
+
+### **Variables and Metrics (how are variables measured)**
+
+**Social Instability**
+
+Riots and Protests after Election (QOF nelda_rpae): Data from 1946-2020
+for 202 countries. Measured as 0. No, 1. Yes, 3. Unclear.
+
+Political Terror Scale Average. Average of Political Terror Scale
+Amnesty International (PTS_A) and Political Terror Scale State
+Department (PTS_S) for 1976-2021. Measured on a scale 1-5, where 1 is
+the value given to the most secure countries, under the rule of law and
+political violence and abuse are extremely rare: to 5, where political
+terror is widespread and hits the civilian population.
+
+**Economic Inequality** (unequal distribution of income and wealth
+within a society)
+
+-   Income share held by highest 10% (QOG wdi_incsh10h). Measured in %
+
+-   Income share held by lowest 10% (QOG wdi_incsh10l). Measured in %\
+    Gini Index: Measures the distribution of income or consumption among
+    individuals or households. Range: 0, perfect equality - 100 perfect
+    inequality.
+
+-   GDP per capita growth, annual %: (QOG wdi_gdpcapgr). Annual
+    percentage growth rate of GDP per capita based on constant local
+    currency.
+
+-   Income inequality. (UNDP Inequality in Income. Continuous variable,
+    were lower values indicate more equality, while higher values more
+    inequality.
+
+**Social Inequality**
+
+-   Egalitarian component index (QOG vdem_egal). Scale: 0-1. Measures
+    the degree to which the rights and freedoms of individuals are
+    equally protected and resources are equally distributed across
+    social groups, and access to power is equally distributed among the
+    population.
+
+-   School enrollment, tertiary (% gross)
+
+-   Coefficient of Human Inequality: Continuous variable. Average of
+    inequalities in health, education, and income
+
+-   Human Capital Index (QOG egov_hci). Continuous variable. Considers
+    adult literacy rate, the combined primary, secondary, and tertiary
+    gross enrollment ratio, expected years of schooling, and average
+    years of schooling.
+
+**Corruption**
+
+-   Control of Corruption, Estimate (QOG wbgi_cce). Measures perceptions
+    of corruption from various sources.
+
+**Trust**
+
+-   Most people can be trusted (QOG wvs_trust). Measured from 0, Need to
+    be very careful to 1, Most people can be trusted.
+
+**Unemployment**
+
+-   Total male youth unemployment (15-24) (QOG wdi_unempymilo)
+
+wdi_unempilo, \# Unemployment, total (% of total labor force) (modeled
+ILO) wdi_lfpilo15, \# Labor force participation rate (% of total ages
+15+) (modeled ILO) wdi_unempmilo, \# total male unemp wdi_unempyilo, \#
+total youth unemployment (15-24) \# informal and self employment SEMP_p,
+Inf_Emp_Agr_Total_Thosnds, Inf_Emp_Non_Agr_Total_Thosnds,
+Inf_Emp_Employess_Total_Thosnds, Inf_Emp_Self_Emp_Total_Thosnds,
+
+**Education**
+
+-   School enrollment, primary (% gross) (QOG wdi_gerp).
+
+-   Educational Attainment (15-24 years, Female) (QOG gea_ea1524f).
+    Measures the average years of education.
+
+-   Educational Attainment (15-24 years, Male) (QOG gea_ea1524M).
+    Measures the average years of education.
+
+**Basic Services**
+
+-   Size of Government: Expenditures, Taxes and Enterprises (QOG
+    fi_sog). Measured on a scale from 0-10, where "large general
+    government consumption", "large transfer sector", "many government
+    enterprises", and "high marginal tax rates and low income thresh-
+    olds", and 10 to "small general government consumption", "small
+    transfer sector", "few government enterprises", and "low marginal
+    tax rates and high income thresholds."
+
+-   wdi_acelu, wdi_acelr, \# electricity urban rural wdi_chexppgdp, \#
+    health expenditure wdi_hwf, \# hand washing who_sanittot, \# Total
+    population using basic sanitation services (%) ihme_hle_0104t, \#
+    Healthy life years 1-4 years total
+
+**Inflation** wdi_inflation, #Inflation, consumer prices
+
+### **Summary Statistics Table**
+
+```{r, echo=FALSE, include=FALSE}
+# Social Instability Data Frame-------------------------------------------------
+si_df <- instab_dataset |>
+  filter(year %in% 1980:2022) |>
+  dplyr::select(Country = cname, Year = year,
+        # social instability. Check the ones that have the most data
+        Riots_post_elections = nelda_rpae, #1946-2020
+        gd_ptsa, # Political Terror Scale Amnesty International 1976-2021
+        gd_ptss, # Political Terror Scale State Department 1976-2021
+ 
+        Corruption = wbgi_cce,
+ 
+        trust = wvs_trust,
+ 
+       #education
+       "School Enrollment Primary" = wdi_gerp, # "School enrollment, primary (% gross)"
+       "Educ. Attainment Female 15-24" = gea_ea1524f, #"Educational Attainment (15-24 years, Female)"
+       "Educ. Attainment Male 15-24" = gea_ea1524m, #"Educational Attainment (15-24 years, Male)"
+       
+       # unemploy
+       Unemployment_Young_Male = wdi_unempymilo,   # total male youth unemployment (15-24)
+
+       # basic services
+       Government_size  = fi_sog, #"Size of Government: Expenditures, Taxes and Enterprises"
+     
+       # econ ineq (unequal distribution of income and wealth within a society)
+       #wdi_povgap215, #only 1991 observations
+       "Income share, 10% high" = wdi_incsh10h,
+       "Income share, 10% low" = wdi_incsh10l,
+       "GDP per capita % growth" = wdi_gdpcapgr, #GDP per capita growth (annual %) 
+       Gini_Index,
+       Income_inequality,
+       
+       # social ineq
+       egal_component = vdem_egal, # "Egalitarian component index"
+       sch_enrlmnt_tertiary_gross = wdi_gert,
+       Human_Inequality_Coefficient,
+       human_capital = egov_hci
+  )|>
+  mutate(pol_terr_scale_avg = if_else(!is.na(gd_ptsa) & !is.na(gd_ptss),
+                                      (gd_ptsa + gd_ptss) / 2, NA_real_)) |>
+  dplyr::select(-c(gd_ptsa, gd_ptss))
+
+```
+
+-   
+
+-   **non-measured but important**
+
+## Method/s
+
+-   why the method
+
+-   **causality**
+
+```{r, echo = FALSE}
+# DRAWING DAGs -------------------------------------
+
+# SI: Social Instability
+# Is: Social Inequality
+# Ie: Economic Inequality
+
+theme_set(theme_void() + theme(legend.position = 'none'))
+gh <- dagify(SI ~ Ie + IS) |>
+  ggdag_parents("SI") +
+  labs(title = "General Hipothesis")
+
+(gh)
+
+```
+
+```{r,  echo=FALSE}
+# DRAWING DAGs -------------------------------------
+
+# SI: Social Instability
+# Ie: Economic Inequality
+# C: Corruption
+# U: Unemployment + Precarious/Informal Employment
+# BS: Basic Services
+
+theme_set(theme_void() + theme(legend.position = 'none'))
+h1 <- dagify(SI ~ Ie + C + U + BS, Ie ~ C + U + BS) |> 
+  ggdag_parents("SI") + 
+  labs(title = "Theory 1") 
+
+h2 <- dagify(SI ~ Ie + C + U + BS, C  ~ Ie, U ~ Ie, BS ~ Ie) |> 
+  ggdag_parents("SI") + 
+  labs(title = "Theory 2") 
+
+(h1 + h2)
+```
+
+```{r,  echo=FALSE}
+# DRAWING DAGs -------------------------------------
+
+# SI: Social Instability
+# Is: Social Inequality
+# Ie: Economic Inequality
+# C: Corruption
+# U: Unemployment + Precarious/Informal Employment
+# BS: Basic Services
+# T: Trust
+# E: Education
+
+theme_set(theme_void() + theme(legend.position = 'none'))
+h3 <- dagify(SI ~ Is + C + U + BS + T, Is ~ C + U + BS + E + Ie, T ~ Is, Ie ~ C + U + BS + E) |>
+  ggdag_parents("SI") +
+  labs(title = "Theory 3")
+
+h4 <- dagify(SI ~ Is + C + U + BS + T, Is ~ C + U + BS + E + Ie, C ~ T, Ie ~ C + U + BS + E) |>
+  ggdag_parents("SI") +
+  labs(title = "Theory 4")
+
+(h3 + h4)
+
+```
+
+## Results
+
+```{r, echo=FALSE}
+
+# load data -------------------------------------------------------------------
+source("data/instability_data.r")
+
+# Social Instability Data Frame-------------------------------------------------
+soc_ins <- instab_dataset |>
+  filter(year %in% 1980:2022) |>
+  dplyr::select(Country = cname, Year = year,
+         # corruption
+         poltcl_corrptn_idx = vdem_corr,
+         media_corrupt = vdem_mecorrpt,
+         election_vote_buying = vdem_elvotbuy,
+         control_of_corruption_estimate = wbgi_cce,
+         
+         # trust
+         trust_in_people = wvs_trust,
+         
+         # social instability. Check the ones that have the most data
+         polit_stab_absence_of_viol_terror = wbgi_pve, #1996-2022
+         Viol_before_elect = nelda_vcdbe, #1946-2020
+         Riot_n_prot_after_elect = nelda_rpae, #1946-2020
+         gd_ptsa, # Political Terror Scale Amnesty International 1976-2021
+         gd_ptss, # Political Terror Scale State Department 1976-2021
+         
+         #education
+         sch_enrlmnt_prmry_gross = wdi_gerp, # "School enrollment, primary (% gross)"
+         ed_attnmnt_fem_15_24 = gea_ea1524f, #"Educational Attainment (15-24 years, Female)"
+         ed_attnmnt_mal_15_24 = gea_ea1524m, #"Educational Attainment (15-24 years, Male)"
+         
+         # unemploy
+         wdi_unempilo,     # Unemployment, total (% of total labor force) (modeled ILO)
+         wdi_lfpilo15,     # Labor force participation rate (% of total ages 15+) (modeled ILO)
+         wdi_unempmilo,    # total male unemp
+         wdi_unempyilo,    # total youth unemployment (15-24)
+         wdi_unempymilo,   # total male youth unemployment (15-24)
+         # informal and self employment
+         SEMP_p,
+         Inf_Emp_Agr_Total_Thosnds,
+         Inf_Emp_Non_Agr_Total_Thosnds,
+         Inf_Emp_Employess_Total_Thosnds,
+         Inf_Emp_Self_Emp_Total_Thosnds,
+
+         # basic services
+         gov_size  = fi_sog, #"Size of Government: Expenditures, Taxes and Enterprises"
+         wdi_acelu, wdi_acelr,   # electricity urban rural
+         wdi_chexppgdp,          # health expenditure
+         wdi_hwf,                # hand washing
+         who_sanittot, # Total population using basic sanitation services (%)
+         ihme_hle_0104t, # Healthy life years 1-4 years total
+         
+         # inflation
+         wdi_inflation, #Inflation, consumer prices
+         
+         wdi_popgr, #Population growth (annual %)
+         
+         # econ ineq (unequal distribution of income and wealth within a society)
+         #wdi_povgap215, #only 1991 observations
+         income_share_high_10pct = wdi_incsh10h,
+         income_share_low_10pct = wdi_incsh10l,
+         wdi_gdpcapgr, #GDP per capita growth (annual %) 
+         Gini_Index,
+         Income_inequality,
+         
+         # social ineq
+         egal_comp_idx = vdem_egal, # "Egalitarian component index"
+         sch_enrlmnt_tertiary_gross = wdi_gert,
+         Human_Inequality_Coefficient,
+         human_cap_idx = egov_hci
+  )|>
+  mutate(pol_terr_scale_avg = if_else(!is.na(gd_ptsa) & !is.na(gd_ptss),
+                                      (gd_ptsa + gd_ptss) / 2, NA_real_))
+```
+
+## Theory 1. Economic instability can predict social instability
+
+### Correlation Plot
+
+```{r, echo=FALSE}
+soc_ins |> 
+  dplyr::select(Country, "Political Terror" = pol_terr_scale_avg, 
+                "GDP/cap growth(%)" = wdi_gdpcapgr, 
+                "Inc Share High 10%" = income_share_high_10pct, 
+                "Inc Share Low 10%" = income_share_low_10pct, Gini_Index,
+                Income_inequality, 
+                "Young Unemp Male" = wdi_unempymilo, 
+                "Corruption" = control_of_corruption_estimate, "Government Size" = gov_size) |>
+  dplyr::select_if(is.numeric) |> 
+  cor(use = "pairwise.complete.obs") |> 
+  corrplot(method = "number", type = 'lower')
+```
+
+```{r, echo=FALSE}
+soc_ins |> 
+  dplyr::select(Country, "Political Terror" = pol_terr_scale_avg, 
+                "GDP/cap growth(%)" = wdi_gdpcapgr, 
+                "Inc Share High 10%" = income_share_high_10pct, 
+                "Inc Share Low 10%" = income_share_low_10pct, Gini_Index,
+                Income_inequality, "Young Unemp Male" = wdi_unempymilo, 
+                "Corruption" = control_of_corruption_estimate, "Government Size" = gov_size) |>
+  dplyr::select_if(is.numeric) |> 
+  cor(use = "pairwise.complete.obs") |>
+  corrplot(type = 'upper', method = "shade") 
+
+```
+
+### Scatter Plots
+
+```{r, echo=FALSE}
+
+# Theory 1 ---------------------------------------------------------------------
+## Economic Inequality on Social Instability ------------
+### plotting the linear regression for income inequality ----
+soc_ins |> 
+  filter(Year %in% 2000:2022) |>
+  ggplot(aes(x = Income_inequality,
+             y = pol_terr_scale_avg
+             )) +
+  geom_jitter() +
+  geom_smooth(method = lm) +
+  labs(title = "Economic Inequality on Social Instability (2000-2022)", 
+       subtitle = "Political Terror ~ Income Inequality", 
+       x = "Income Inequality", 
+       y = "Social Instability - Political Terror") +
+  theme_minimal() +
+  theme(
+    axis.title = element_text(color = "darkgrey"),
+    legend.position = "bottom",  
+    axis.text.x = element_text(size = 7),
+    axis.text.y = element_text(size = 7)
+  )
+
+soc_ins |> 
+  filter(Year %in% 2000:2022) |>
+  ggplot(aes(x = wdi_gdpcapgr,
+             y = pol_terr_scale_avg
+  )) +
+  geom_jitter() +
+  geom_smooth(method = lm) +
+  labs(title = "Economic Inequality on Social Instability (2000-2022)", 
+       subtitle = "Political Terror ~ GDP/Capita Growth(%)", 
+       x = "GDP/Capita Growth(%)", 
+       y = "Social Instability - Political Terror") +
+  theme_minimal() +
+  theme(
+    axis.title = element_text(color = "darkgrey"),
+    legend.position = "bottom",  
+    axis.text.x = element_text(size = 7),
+    axis.text.y = element_text(size = 7)
+  )
+
+```
+
+### Linear Regression Economic Enequality Indicators on Social Instability (Political Terror) with and without Controls
+
+```{r, echo=FALSE}
+### linear regression 
+
+with(soc_ins, {
+  list(
+    "GDP/cap growth (%)" = lm_robust(formula = pol_terr_scale_avg ~
+                                       wdi_gdpcapgr + factor(Year) + 
+                                       factor(Country)),
+    "GDP/cap growth (%) (Controls)" = lm_robust(formula = pol_terr_scale_avg ~
+                                                  wdi_gdpcapgr + wdi_unempymilo + 
+                                                  control_of_corruption_estimate + gov_size + 
+                                                  factor(Year) + factor(Country)),
+    "Income Share High 10%" = lm_robust(formula = pol_terr_scale_avg ~
+                                  income_share_high_10pct + factor(Year) + factor(Country)),
+    "Income Share High 10% (Controls)" = lm_robust(formula = pol_terr_scale_avg ~
+                                   income_share_high_10pct + wdi_unempymilo + 
+                                     control_of_corruption_estimate + gov_size + factor(Year) + 
+                                   factor(Country)),
+    "Income Share Low 10%" = lm_robust(formula = pol_terr_scale_avg ~
+                                         income_share_low_10pct + factor(Year) + 
+                                         factor(Country)),
+    "Income Share Low 10% (Controls)" = lm_robust(formula = pol_terr_scale_avg ~
+                                     income_share_low_10pct + gov_size + 
+                                     wdi_unempymilo + control_of_corruption_estimate + 
+                                     factor(Year) + factor(Country)),
+    "Gini index" = lm_robust(formula = pol_terr_scale_avg ~
+                             Gini_Index + factor(Year) + factor(Country)),
+    "Gini index (Controls)"  = lm_robust(formula = pol_terr_scale_avg ~
+                              Gini_Index + gov_size + wdi_unempymilo + 
+                                control_of_corruption_estimate + factor(Year) + factor(Country)),
+    "Income inequality" = lm_robust(formula = pol_terr_scale_avg ~
+                                 Income_inequality + factor(Year) + factor(Country)), 
+    
+    "Income inequality (Controls)" = lm_robust(formula = pol_terr_scale_avg ~
+                                 Income_inequality + gov_size + wdi_unempymilo + 
+                                   control_of_corruption_estimate + factor(Year) + factor(Country))
+    ) |> 
+    msummary(coef_omit = "factor", stars = TRUE)
+  })
+```
+
+### Linear Regression Economic Enequality Indicators on Social Instability (Riots/Protests after election) with and without Controls
+
+```{r, echo=FALSE}
+### linear regression for riots and protests after elections ----
+with(soc_ins, {
+  list(
+    "GDP/cap growth (%)" = lm_robust(formula = Riot_n_prot_after_elect ~
+                                       wdi_gdpcapgr + factor(Year) + 
+                                       factor(Country)),
+    "GDP/cap growth (%) (Controls)" = lm_robust(formula = Riot_n_prot_after_elect ~
+                                                  wdi_gdpcapgr + wdi_unempymilo + 
+                                                  control_of_corruption_estimate + gov_size + 
+                                                  factor(Year) + factor(Country)),
+    "Income Share High 10%" = lm_robust(formula = Riot_n_prot_after_elect ~
+                                          income_share_high_10pct + factor(Year) + 
+                                          factor(Country)),
+    "Income Share High 10% (Controls)" = lm_robust(formula = Riot_n_prot_after_elect ~
+                                          income_share_high_10pct + wdi_unempymilo + 
+                                            control_of_corruption_estimate + gov_size + 
+                                            factor(Year) + factor(Country)),
+    "Income Share Low 10%" = lm_robust(formula = Riot_n_prot_after_elect ~
+                                         income_share_low_10pct + factor(Year) + 
+                                         factor(Country)),
+    "Income Share Low 10% (Controls)" = lm_robust(formula = Riot_n_prot_after_elect ~
+                                         income_share_low_10pct + wdi_unempymilo + 
+                                           control_of_corruption_estimate + gov_size 
+                                         + factor(Year) + factor(Country)),
+    "Gini index" = lm_robust(formula = Riot_n_prot_after_elect ~
+                               Gini_Index + factor(Year) + factor(Country)),
+    "Gini index (Controls)" = lm_robust(formula = Riot_n_prot_after_elect ~
+                               Gini_Index + wdi_unempymilo + 
+                                 control_of_corruption_estimate + gov_size + 
+                                 factor(Year) + factor(Country)),
+    "Income inequality" = lm_robust(formula = Riot_n_prot_after_elect ~
+                                      Income_inequality + factor(Year) + 
+                                      factor(Country)),
+    "Income inequality (Controls)" = lm_robust(formula = Riot_n_prot_after_elect ~
+                                      Income_inequality + wdi_unempymilo + 
+                                        control_of_corruption_estimate + gov_size 
+                                      + factor(Year) + factor(Country))
+    ) |> 
+    msummary(coef_omit = "factor", stars = TRUE)
+  })
+```
+
+### Corruption, Unemployment, and Basic Services on Economic Inequality
+
+```{r, echo=FALSE}
+## Corruption on Economic Inequality ------------
+### plotting the linear regression
+soc_ins |>
+  filter(Year %in% 2000:2022) |>
+  ggplot(aes(x = control_of_corruption_estimate,
+             y = Income_inequality 
+             )) +
+  geom_jitter() +
+  geom_smooth(method = lm) +
+  labs(title = "Corruption on Economic Inequality (2000-2022)", 
+       subtitle = "Income Inequality ~ Corruption", 
+       x = "Corruption", 
+       y = "Income Inequality") +
+  theme_minimal() +
+  theme(
+    axis.title = element_text(color = "darkgrey"),
+    legend.position = "bottom",  
+    axis.text.x = element_text(size = 7),
+    axis.text.y = element_text(size = 7)
+  )
+```
+
+```{r, echo=FALSE}
+### linear regression 
+with(soc_ins, {
+  list("Corruption" = lm_robust(formula = Income_inequality ~ 
+              control_of_corruption_estimate)) |>
+         msummary(coef_omit = "factor", stars = TRUE)
+})
+```
+
+```{r, echo=FALSE}
+## Unemployment on Economic Inequality ------------
+soc_ins |> 
+  filter(Year %in% 2000:2022) |>
+  ggplot(aes(x = wdi_unempyilo,
+             y = Income_inequality)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  labs(title = "Unemployment on Economic Inequality (2000-2022)", 
+       subtitle = "Income Inequality ~ Unemployment", 
+       x = "Unemployment", 
+       y = "Income Inequality") +
+  theme_minimal() +
+  theme(
+    axis.title = element_text(color = "darkgrey"),
+    legend.position = "bottom",  
+    axis.text.x = element_text(size = 7),
+    axis.text.y = element_text(size = 7)
+  )
+```
+
+```{r, echo=FALSE}
+with(soc_ins, {
+  list("Young Unemployment" = lm_robust(formula = Income_inequality ~ 
+                                          wdi_unempymilo)) |>
+    msummary(coef_omit = "factor", stars = TRUE)
+})
+```
+
+```{r, echo=FALSE}
+## Basic Services on Economic Inequality ------------
+### plotting the linear regression
+soc_ins |> 
+  filter(Year %in% 2000:2021) |>
+  ggplot(aes(x = gov_size,
+             y =  Income_inequality)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  labs(title = "Basic Services on Economic Inequality (2000-2022)", 
+       subtitle = "Income Inequality ~ Government Size", 
+       x = "Government Size", 
+       y = "Income Inequality") +
+  theme_minimal() +
+  theme(
+    axis.title = element_text(color = "darkgrey"),
+    legend.position = "bottom",  
+    axis.text.x = element_text(size = 7),
+    axis.text.y = element_text(size = 7)
+  )
+```
+
+```{r, echo=FALSE}
+### linear regression 
+with(soc_ins, {
+  list("Government Size" = lm_robust(formula = Income_inequality ~ 
+       gov_size
+       )) |>
+    msummary(coef_omit = "factor", stars = TRUE)
+})
+```
+
+## Theory 3. Social inequality can predict social instability
+
+### Correlation Plots
+
+```{r, echo=FALSE}
+soc_ins |> 
+  dplyr::select(Country,
+                "Political Terror" = pol_terr_scale_avg,
+                "Post Elect Protest" = Riot_n_prot_after_elect,
+                "Ed. Enroll. Tertiary" = sch_enrlmnt_tertiary_gross, 
+                "Egalitarian Component Index" = egal_comp_idx, 
+                Human_Inequality_Coefficient, 
+                "Human Capital" = human_cap_idx,
+                "Corruption" = control_of_corruption_estimate,
+                Income_inequality,
+                gov_size, 
+                "Y. M. Unemployment" = wdi_unempymilo
+                ) |>
+  dplyr::select_if(is.numeric) |> 
+  cor(use = "pairwise.complete.obs") |> 
+  corrplot(method = "number", type = 'lower')
+```
+
+```{r, echo=FALSE}
+soc_ins |> 
+  dplyr::select(Country, 
+                "Political Terror" = pol_terr_scale_avg,
+                "Post Elect Protest" = Riot_n_prot_after_elect,
+                "Ed. Enroll. Tertiary" = sch_enrlmnt_tertiary_gross, 
+                "Egalitarian Component Index" = egal_comp_idx, 
+                Human_Inequality_Coefficient, 
+                "Human Capital" = human_cap_idx,
+                "Corruption" = control_of_corruption_estimate,
+                Income_inequality,
+                gov_size, 
+                "Y. M. Unemployment" = wdi_unempymilo
+                ) |>
+  dplyr::select_if(is.numeric) |> 
+  cor(use = "pairwise.complete.obs") |>
+  corrplot(type = 'upper', method = "shade") 
+```
+
+### Scatter Plots
+
+```{r, echo=FALSE}
+
+## Social Inequality on Social Instability ----------------------------
+
+soc_ins |> 
+  filter(Year %in% 2000:2022) |>
+  ggplot(aes(x = sch_enrlmnt_tertiary_gross,
+             y = pol_terr_scale_avg)) + 
+  geom_jitter() +
+  geom_smooth(method = lm) +
+  labs(title = "Social Inequality on Social Instability (2000-2022)", 
+       subtitle = "Political Terror ~ Educated Elites", 
+       x = "Educated Elites", 
+       y = "Social Instability - Political Terror") +
+  theme_minimal() +
+  theme(
+    axis.title = element_text(color = "darkgrey"),
+    legend.position = "bottom",  
+    axis.text.x = element_text(size = 7),
+    axis.text.y = element_text(size = 7)
+  )
+
+soc_ins |> 
+  filter(Year %in% 2000:2022) |>
+  ggplot(aes(x = sch_enrlmnt_tertiary_gross,
+             y = Riot_n_prot_after_elect)) + 
+  geom_jitter() +
+  geom_smooth(method = lm) +
+  labs(title = "Social Inequality on Social Instability (2000-2022)", 
+       subtitle = "Protests/Riots After Elections ~ Educated Elites", 
+       x = "Educated Elites", 
+       y = "Social Instability - Riots After Elections") +
+  theme_minimal() +
+  theme(
+    axis.title = element_text(color = "darkgrey"),
+    legend.position = "bottom",  
+    axis.text.x = element_text(size = 7),
+    axis.text.y = element_text(size = 7)
+  )
+```
+
+```{r, echo=FALSE}
+### linear regression for social ineq on soc instability (polit_stab_absence_of_viol_terror) ----
+
+with(soc_ins, {
+  list(
+    "School Enroll. Tertiary" = lm_robust(formula = pol_terr_scale_avg ~ 
+       sch_enrlmnt_tertiary_gross + factor(Year) + factor(Country)),
+    "School Enroll. Tertiary (Controls)" = lm_robust(formula = pol_terr_scale_avg ~
+       sch_enrlmnt_tertiary_gross + wdi_unempymilo + control_of_corruption_estimate + 
+       gov_size + Income_inequality + factor(Year) + factor(Country)),
+    "Egalitarian component" = lm_robust(formula = pol_terr_scale_avg ~ 
+       egal_comp_idx + factor(Year) + factor(Country)),
+    "Egalitarian component (Controls)" = lm_robust(formula = pol_terr_scale_avg ~ 
+       egal_comp_idx + wdi_unempymilo + control_of_corruption_estimate + 
+       gov_size + Income_inequality + factor(Country) + factor(Year)),
+    "Human Inequality" = lm_robust(formula = pol_terr_scale_avg ~ 
+       Human_Inequality_Coefficient + factor(Year) + factor(Country)),
+    "Human Inequality (Controls)" = lm_robust(formula = pol_terr_scale_avg ~ 
+       Human_Inequality_Coefficient + wdi_unempymilo + control_of_corruption_estimate + 
+       gov_size + Income_inequality + factor(Year) + factor(Country)),
+    "Human Capital" = lm_robust(formula = pol_terr_scale_avg ~ 
+       human_cap_idx + factor(Year) + factor(Country)),
+    "Human Capital (Controls)" = lm_robust(formula = pol_terr_scale_avg ~ 
+       human_cap_idx + wdi_unempymilo + control_of_corruption_estimate + 
+       gov_size + Income_inequality + factor(Year) + factor(Country))
+    ) |> 
+    msummary(coef_omit = "factor", stars = TRUE)
+  })
+
+with(soc_ins, {
+  list(
+      "School Enroll. Tertiary" = lm_robust(formula = Riot_n_prot_after_elect ~ 
+                                                 sch_enrlmnt_tertiary_gross + factor(Year) +
+                                                 factor(Country)),
+      "School Enroll. Tertiary (Controls)" = lm_robust(formula = Riot_n_prot_after_elect ~
+                                                            sch_enrlmnt_tertiary_gross + wdi_unempymilo +
+                                                            control_of_corruption_estimate + gov_size +
+                                                            Income_inequality + factor(Year) + 
+                                                            factor(Country)),
+      "Egalitarian component" = lm_robust(formula = Riot_n_prot_after_elect ~
+                                                  egal_comp_idx + factor(Year) + factor(Country)),
+      "Egalitarian component (Controls)" = lm_robust(formula = Riot_n_prot_after_elect ~
+                                                             egal_comp_idx + wdi_unempymilo +
+                                                             control_of_corruption_estimate + 
+                                                             gov_size + Income_inequality +
+                                                             factor(Country) + factor(Year)),
+      "Human Inequality" = lm_robust(formula = Riot_n_prot_after_elect ~
+                                                   Human_Inequality_Coefficient + factor(Year) + 
+                                                   factor(Country)),
+      "Human Inequality (Controls)" = lm_robust(formula = Riot_n_prot_after_elect ~
+                                                              Human_Inequality_Coefficient + wdi_unempymilo +
+                                                              control_of_corruption_estimate + gov_size +
+                                                              Income_inequality + factor(Year) + 
+                                                              factor(Country)),
+      "Human Capital" = lm_robust(formula = Riot_n_prot_after_elect ~ 
+                                          human_cap_idx + factor(Year) + factor(Country)),
+      "Human Capital (Controls)" = lm_robust(formula = Riot_n_prot_after_elect ~ 
+                                                     human_cap_idx + wdi_unempymilo +
+                                                     control_of_corruption_estimate + gov_size +
+                                                     Income_inequality + factor(Year) + factor(Country))
+    ) |> 
+      msummary(coef_omit = "factor", stars = TRUE)
+  })
+
+```
+
+```{r, echo=FALSE}
+## Trust on Social Instability ----------------------------
+### plotting the linear regression 
+soc_ins |> 
+  #filter(Year %in% 2000:2021) |>
+  ggplot(aes(x = trust_in_people,
+             y = Riot_n_prot_after_elect)) +
+  geom_jitter() +
+  geom_smooth(method = lm)
+```
+
+```{r, echo=FALSE}
+### linear regression for trust on soc instability 
+reg_tr_on_SI <- soc_ins |>
+  #filter(Year %in% 2000:2021) |>
+  lm_robust(formula = Riot_n_prot_after_elect ~ trust_in_people)
+msummary(reg_tr_on_SI, stars = TRUE)
+
+```
+
+-   results
+
+-   interpret
+
+## Conclusion
+
+Discussion "Those who don't know history are destined to repeat it."
+Though only a few know that the author of this aphorism was Spanish
+philosopher Jorge (George) Santayana, most of those who use it tacitly
+accept that history and, by extension, social dynamics may be governed
+by some kind of rules. Yet, the majority of historians emphatically
+dissent from such an idea. They reject the possibility that the dynamics
+of human societies be characterized by general regularities or governed
+by rules. For them, because a person's behavior is unpredictable, the
+dynamics of the societies they constitute cannot be predicted either.
+Such unpredictability would make any attempt to mathematically or
+statistically model it a gross oversimplification, unable to explain
+anything meaningful about social or historical dynamics--let alone
+predicting them.
+
+This paper is the first step in a long term project that seeks to bridge
+both perspectives to understand what economic, political, social,
+environmental, and international factors may lead to social instability
+(discontent, unrest, and violence). The project aims at devising a model
+capable of predicting when unrest and violence are likely to develop so
+policymakers can make adjustments avoid discontent, ensure fairness, and
+safeguard political and economic stability. It also aims at becoming a
+risk analysis tool that fed with up-to-date intelligence help investors
+to plan business and take precautions accordingly, and
+travelers/visitors to avoid distressing and risky situations.
+
+Compare to others
+
+Note that the `echo = FALSE` parameter was added to the code chunk to
+prevent printing of the R code that generated the plot.
