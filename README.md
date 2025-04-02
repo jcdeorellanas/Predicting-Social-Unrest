@@ -1,5 +1,5 @@
 # Social-Unrest-Political-Chaos
-This project asks where does social unrest/instability stem from and what processes/situation produce political chaos.
+This project asks where social unrest/instability stems from and what processes/situations produce political chaos. It also aims at devising a method to predict social instability right before it escalates into violence/social and political. Further, intends to develop a methodology for risk analysis (investment, travel, personal security). Finally, the files, variables, and scripts represent a work in progress and the findings are preliminary. 
 
 Notice: The project relies on data from the following datasets. Due to their sizes and public accessibility, it is necessary to download them from their respective institutional websites as they are not uploaded into the `data` folder:
 
